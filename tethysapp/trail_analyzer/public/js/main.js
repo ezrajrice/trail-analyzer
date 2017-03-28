@@ -1,6 +1,6 @@
 "use strict";
 $(document).ready(function() {
-    var service_url = '';
+    var service_url = 'http://geoserver.byu.edu:6080/arcgis/rest/services/dan_ames/roads/MapServer';
     var layers = [
         new ol.layer.Tile({
             source: new ol.source.OSM()
@@ -21,4 +21,4 @@ $(document).ready(function() {
             zoom: 4
         })
     });
-}
+})
