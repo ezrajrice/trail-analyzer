@@ -1,23 +1,31 @@
 {% extends "trail_analyzer/base.html" %}
-
-{% block app_navigation_items %}
-  <li class="active"><a href="">Home</a></li>
-{% endblock %}
-
-{% block app_content %}
-  <div id='mapDiv'></div>
-{% endblock %}
-
-{% block app_actions %}
-{% endblock %}
+{% load tethys_gizmos %}
 
 {% block content_dependent_styles %}
-  {{ block.super }}
-  <link href="https://js.arcgis.com/3.15/esri/css/esri.css" rel="stylesheet"/>
-  <link href="http://geoserver.byu.edu:6443/arcgis/rest/static/jsapi.css" rel="stylesheet"/>
+    {{ block.super }}
+    <link href="https://js.arcgis.com/3.15/esri/css/esri.css" rel="stylesheet"/>
+    <link href="http://geoserver.byu.edu:6443/arcgis/rest/static/jsapi.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 {% endblock %}
 
 {% block scripts %}
-  {{ block.super }}
-  <script type="text/javascript" src="https://js.arcgis.com/3.15/init.js"></script>
+    {{ block.super }}
+    <script type="text/javascript" src="https://js.arcgis.com/3.15/init.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block app_navigation_items %}
+    <li class="active"><a href="">Home</a></li>
+{% endblock %}
+
+{% block app_content %}
+    <div id='mapDiv'></div>
+    <div id="plot-container">
+        <div id="close-plot"><span class="glyphicon glyphicon-remove"></span></div>
+        {% gizmo plot_view elevation_plot %}
+    </div>
+{% endblock %}
+
+{% block app_actions %}
+    <button class="btn btn-sm" id="show-plot" disabled="disabled">Plot</button>
 {% endblock %}

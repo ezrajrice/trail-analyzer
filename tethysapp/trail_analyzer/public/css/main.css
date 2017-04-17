@@ -47,9 +47,27 @@
 
 #inner-app-content {
     padding: 0;
+    overflow-y: hidden;
 }
 
 #mapDiv {
     height: 100%;
     width: 100%;
+}
+
+#close-plot {
+    float: right;
+    padding: 10px;
+}
+
+#plot-container {
+    position: relative;
+    top: 50px;
+    z-index: 99;
+    background-color: #ffffff;
+    min-height: 550px;
+}
+
+#plot-container.show {
+    top: -550px;
 }
