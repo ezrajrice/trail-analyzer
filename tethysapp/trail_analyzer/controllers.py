@@ -17,12 +17,12 @@ def home(request):
         subtitle='',
         spline=True,
         x_axis_title='Distance',
-        x_axis_units='miles',
+        x_axis_units='ft',
         y_axis_title='Elevation',
         y_axis_units='ft',
         series=[
             {
-                'name': 'Air Temp',
+                'name': 'Trail',
                 'color': '#0066ff',
                 'marker': {'enabled': False},
                 'data': [

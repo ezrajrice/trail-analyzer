@@ -23,7 +23,7 @@ $(document).ready(function() {
         //Create a map object with a default "streets" basemap:
         var map = new Map("mapDiv", {basemap: "streets", center: [-111.6, 40.23], zoom: 10, slider: false});
 
-        var trails_url = "http://geoserver.byu.edu:6080/arcgis/rest/services/Ellie_Ott/trails/MapServer/0";
+        var trails_url = "http://geoserver.byu.edu:6080/arcgis/rest/services/Ellise_Hiking/trails/MapServer/0";
         var geoprocessing_url = "http://geoserver.byu.edu:6080/arcgis/rest/services/Ellise_Hiking/Ellie_hiking/GPServer/hiking/submitJob?" +
             "ID_input=[[TRAIL_ID]]&env%3AoutSR=&env%3AprocessSR=&returnZ=true&returnM=false&f=pjson";
         var results_url = "http://geoserver.byu.edu:6080/arcgis/rest/services/Ellise_Hiking/Ellie_hiking/GPServer/hiking/jobs/[[JOB_ID]]/results/points?f=pjson";
@@ -60,18 +60,15 @@ $(document).ready(function() {
             //use a fast bounding box query. will only go to the server if bounding box is outside of the visible map
             var selectedTrail = trails_layer.queryFeatures(query, selectInBuffer).results[0].features[0];
             var trail_length = selectedTrail.attributes.SHAPE_Leng;
-            console.log(selectedTrail);
             // Fire AJAX call to server
             var geo_url = geoprocessing_url.replace('[[TRAIL_ID]]', selectedTrail.attributes.TrailID);
-            console.log(geo_url)
             $.ajax({
-                url : ajax_url,
+                url : geo_url,
                 type : 'GET',
                 dataType:'json',
                 success : function(data) {
-                    console.log(data);
                     var job_id = data.jobId;
-                    getTrailData(job_id, trail_length);
+                    setTimeout(function() {getTrailData(job_id, trail_length);}, 3000);
                 },
                 error : function(request, error)
                 {
@@ -81,25 +78,29 @@ $(document).ready(function() {
         });
 
         function getTrailData(job_id, trail_length) {
-            res_url = results_url.replace('[[JOB_ID]]', job_id);
+            var res_url = results_url.replace('[[JOB_ID]]', job_id);
             $.ajax({
                 url : res_url,
                 type : 'GET',
                 dataType:'json',
                 success : function(data) {
                     console.log(data);
-                    // Set data to be data of plot
-                    var plot_data = [];
-                    for (var i=0; i<data.features.length; i++) {
-                        var x = (trail_length / data.length) * i;
-                        var y = data.features[i].grid_code;
-                        plot_data.push([x,y]);
+                    if (data.error && data.error.code == 400) {
+                        setTimeout(function() {getTrailData(job_id, trail_length);}, 3000);
+                    } else {
+                        // Set data to be data of plot
+                        var plot_data = [];
+                        for (var i=0; i<data.value.features.length; i++) {
+                            var x = (trail_length / data.value.features.length) * i;
+                            var y = data.value.features[i].attributes.grid_code;
+                            plot_data.push([x,y]);
+                        }
+                        updatePlot(plot_data);
                     }
-                    updatePlot(plot_data);
                 },
                 error : function(request, error)
                 {
-                    console.log("Request: "+JSON.stringify(request));
+                    console.error("Request: "+JSON.stringify(request));
                 }
             });
         }
@@ -112,8 +113,6 @@ $(document).ready(function() {
             var TrailID = feature.attributes.TrailID;
             var query = new Query();
             query = TrailID;
-
-            // todo Change the selected features display
 
             return TrailID;
         }
